@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Book" ALTER COLUMN "isLiked" DROP NOT NULL,
+ALTER COLUMN "isLiked" DROP DEFAULT;
