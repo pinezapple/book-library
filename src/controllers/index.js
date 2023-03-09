@@ -6,7 +6,13 @@ const handleGet = async (req, res, next) => {
     const bookFromAPI = await getBooksFromAPI();
     await populateBooks(bookFromAPI);
     const bookGroup = groupBookByAuthor(bookFromAPI);
-    res.json(bookGroup);
+
+    const { author } = req.query;
+    if (!author) {
+      res.json(bookGroup);
+    } else {
+      res.json(bookGroup[author]);
+    }
   } catch (error) {
     next(error);
   }
