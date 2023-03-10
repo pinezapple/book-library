@@ -1,4 +1,5 @@
 const axios = require('axios');
+// const { get } = require('axios');
 const { ALL_BOOKS, BOOK_BY_ID } = require('../constants');
 
 async function callExternalAPI(url) {
@@ -6,21 +7,21 @@ async function callExternalAPI(url) {
   return res.data;
 }
 
-const groupBookByAuthor = (book) => (
-  book.reduce((accumulator, currentValue) => {
-    const tmp = JSON.parse(JSON.stringify(accumulator));
+const groupBooksByAuthor = (books) => (
+  books.reduce((groupedBooks, currentBook) => {
+    const newGroupedBooks = { ...groupedBooks };
     // or we can do deep copy by Lodash clone deep
-    if (!tmp[currentValue.Author]) {
-      tmp[currentValue.Author] = [];
+    if (!newGroupedBooks[currentBook.Author]) {
+      newGroupedBooks[currentBook.Author] = [];
     }
-    tmp[currentValue.Author].push({
-      ...currentValue,
-    });
-    return tmp;
+    newGroupedBooks[currentBook.Author] = [...newGroupedBooks[currentBook.Author],
+      currentBook];
+    return newGroupedBooks;
   }, {})
 );
 
 const getBooksFromAPI = async () => {
+  // ALL_BOOKS -> ALL_BOOK_PATH
   const result = await callExternalAPI(process.env.BOOK_API_URL + ALL_BOOKS);
   const ratingPromises = result.books.map(
     (book) => (callExternalAPI(process.env.BOOK_API_URL + BOOK_BY_ID + book.id)),
@@ -33,8 +34,8 @@ const getBooksFromAPI = async () => {
     }
   ));
 
-  // const bookGroup = groupBookByAuthor(bookWithRatings);
+  // const bookGroup = groupBooksByAuthor(bookWithRatings);
   return bookWithRatings;
 };
 
-module.exports = { callExternalAPI, groupBookByAuthor, getBooksFromAPI };
+module.exports = { callExternalAPI, groupBooksByAuthor, getBooksFromAPI };

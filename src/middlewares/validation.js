@@ -1,4 +1,4 @@
-function generateValidationMiddleware(joiSchema, validateProperty = 'body') {
+function generateValidationMiddleware(joiSchema, validateProperty) {
   return async function validationMiddleware(req, res, next) {
     try {
       const value = await joiSchema.validateAsync(req[validateProperty]);
